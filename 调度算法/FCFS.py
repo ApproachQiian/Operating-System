@@ -18,25 +18,20 @@ def readTask(pid):
 
 
 def runTask():
-    global endTime
     for i in range(len(Nodes)):
         pid = i + 1
         if i == 0:
-            startTime = Nodes[i].arriveTime
-            endTime = Nodes[i].arriveTime + Nodes[i].serviceTime
+            Nodes[i].startTime = Nodes[i].arriveTime
+            Nodes[i].endTime = Nodes[i].arriveTime + Nodes[i].serviceTime
         else:
-            startTime = endTime + 1
-            endTime += (Nodes[i].serviceTime + 1)
-        waitTime = endTime - Nodes[i].arriveTime  # 周转时间= 结束运行时间-到达时间
-        averageTime = waitTime / Nodes[i].serviceTime  # 带权周转时间=周转时间/服务时间
-        printTask(pid, startTime, waitTime, averageTime, endTime)
+            Nodes[i].startTime = max(sum(Nodes[i].serviceTime for i in range(i)), Nodes[i].arriveTime) + 1
+            Nodes[i].endTime = Nodes[i].startTime + Nodes[i].serviceTime
+        Nodes[i].waitTime = Nodes[i].endTime - Nodes[i].arriveTime  # 周转时间= 结束运行时间-到达时间
+        Nodes[i].averageTime = Nodes[i].waitTime / Nodes[i].serviceTime  # 带权周转时间=周转时间/服务时间
+        printTask(pid)
 
 
-def printTask(pid, startTime, waitTime, averageTime, endTime):
-    Nodes[pid - 1].startTime = startTime
-    Nodes[pid - 1].waitTime = waitTime
-    Nodes[pid - 1].averageTime = averageTime
-    Nodes[pid - 1].endTime = endTime
+def printTask(pid):
     print('进程{}的到达时间:{}'.format(pid, Nodes[pid - 1].arriveTime))
     print('进程{}的要求服务时间:{}'.format(pid, Nodes[pid - 1].serviceTime))
     print('进程{}的开始运行时间:{}'.format(pid, Nodes[pid - 1].startTime))
@@ -57,3 +52,14 @@ def main():
 if __name__ == '__main__':
     Nodes = []
     main()
+"""
+test data:
+2
+1 5
+3 10
+-----------------------
+3
+1 2
+1 3
+1 4
+"""
